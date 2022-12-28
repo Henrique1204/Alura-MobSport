@@ -1,55 +1,59 @@
-import { View, TouchableOpacity, Alert } from "react-native"
-import { EntradaTexto } from "../../componentes/EntradaTexto"
-import Botao from "../../componentes/Botao"
-import estilos from "./estilos"
-import React, { useState } from "react"
-import { salvarProduto, atualizarProduto, deletarProduto } from "../../servicos/firestore"
-import { Alerta } from "../../componentes/Alerta"
-import Icon from "react-native-vector-icons/Feather"
+import React from 'react';
+import { SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
-export default function DadosProduto({ navigation, route }){
-  const [nome, setNome] = useState(route?.params?.nome || '')
-  const [preco, setPreco] = useState(route?.params?.preco || '')
-  const [mensagem, setMensagem] = useState('')
-  const [mostrarMensagem, setMostrarMensagem] = useState(false)
+import estilos from './estilos';
 
-  async function salvar(){
-    if(nome == '' || preco == ''){
-      setMensagem("Por favor preencha todos os campos")
-      setMostrarMensagem(true)
-      return
+import { salvarProduto, atualizarProduto, deletarProduto } from '../../servicos/firestore';
+
+import EntradaTexto from '../../componentes/EntradaTexto';
+import Botao from '../../componentes/Botao';
+import Alerta from '../../componentes/Alerta';
+
+
+const DadosProduto = ({ navigation, route }) => {
+  const [nome, setNome] = React.useState(route?.params?.nome || '');
+  const [preco, setPreco] = React.useState(route?.params?.preco || '');
+  const [mensagem, setMensagem] = React.useState('');
+  const [mostrarMensagem, setMostrarMensagem] = React.useState(false);
+
+  const salvar = async () => {
+    if (nome == '' || preco == ''){
+      setMensagem('Por favor preencha todos os campos');
+      setMostrarMensagem(true);
+
+      return;
     }
 
-    let resultado = ''
-    if(route?.params) {
+    let resultado = '';
+
+    if (route?.params) {
       resultado = await atualizarProduto(route?.params?.id, {
         nome, preco
-      })
-    }
-    else{
+      });
+    } else{
       resultado = await salvarProduto({
         nome,
         preco
-      })
+      });
     }
     
-    if(resultado == 'erro'){
-      setMensagem("Erro ao salvar produto")
-      setMostrarMensagem(true)
-    }
-    else {
+    if (resultado == 'erro'){
+      setMensagem('Erro ao salvar produto');
+      setMostrarMensagem(true);
+    } else {
       navigation.goBack();
     }
   }
 
-  async function deletar(){
+  const deletar = () => {
     Alert.alert(
       'Deletar produto',
       'Tem certeza que quer deletar?',
       [
         {
           text: 'Não',
-          style:"cancel"
+          style:'cancel'
         },
         {
           text: 'Sim',
@@ -60,28 +64,29 @@ export default function DadosProduto({ navigation, route }){
           style: 'default'
         }
       ]
-    )
-  }
+    );
+  };
 
   return (
-    <View style={estilos.container}>
-
-      { route?.params &&
-      <TouchableOpacity onPress={() => deletar()}>
-        <Icon
-          name="trash-2"
-          size={20}
-          color="#000"
-        />
-      </TouchableOpacity>}
+    <SafeAreaView style={estilos.container}>
+      {route?.params && (
+        <TouchableOpacity onPress={() => deletar()}>
+          <Icon
+            name='trash-2'
+            size={20}
+            color='#000'
+          />
+        </TouchableOpacity>
+      )}
 
       <EntradaTexto
-        label="Nome do produto"
+        label='Nome do produto'
         value={nome}
         onChangeText={texto => setNome(texto)}
       />
+
       <EntradaTexto
-        label="Preço do produto"
+        label='Preço do produto'
         value={preco}
         onChangeText={texto => setPreco(texto)}
       />
@@ -93,6 +98,8 @@ export default function DadosProduto({ navigation, route }){
         error={mostrarMensagem}
         setError={setMostrarMensagem}
       />
-    </View>
+    </SafeAreaView>
   )
-}
+};
+
+export default DadosProduto;

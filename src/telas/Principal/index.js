@@ -1,41 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
-import Cabecalho from '../../componentes/Cabecalho';
-import Produto from '../../componentes/Produtos';
+import React from 'react';
+import { SafeAreaView, Text, RefreshControl, ScrollSafeAreaView, TouchableOpacity } from 'react-native';
+
 import estilos from './estilos';
+
 import { auth } from '../../config/firebase';
-import { BotaoProduto } from '../../componentes/BotaoProduto';
 import { pegarProdutos, pegarProdutosTempoReal } from '../../servicos/firestore';
 
-export default function Principal({ navigation }) {
+import Cabecalho from '../../componentes/Cabecalho';
+import Produto from '../../componentes/Produtos';
+import BotaoProduto from '../../componentes/BotaoProduto';
+
+const Principal = ({ navigation }) => {
   const usuario = auth.currentUser;
-  const [produtos, setProdutos] = useState([])
-  const [refreshing, setRefreshing] = useState(false)
 
-  async function carregarDadosProdutos(){
-    setRefreshing(true)
-    const produtosFirestore = await pegarProdutos()
-    setProdutos(produtosFirestore)
-    setRefreshing(false)
-  }
+  const [produtos, setProdutos] = React.useState([])
+  const [refreshing, setRefreshing] = React.useState(false)
 
-  useEffect(() => {
+  const carregarDadosProdutos = async () => {
+    setRefreshing(true);
+
+    const produtosFirestore = await pegarProdutos();
+
+    setProdutos(produtosFirestore);
+    setRefreshing(false);
+  };
+
+  const deslogar = () => {
+    auth.signOut();
+
+    navigation.replace('Login');
+  };
+
+  React.useEffect(() => {
     carregarDadosProdutos()
 
     pegarProdutosTempoReal(setProdutos)
-  },[])
-
-  function deslogar(){
-    auth.signOut();
-    navigation.replace('Login');
-  }
+  }, []);
 
   return (
-    <View style={estilos.container}>
+    <SafeAreaView style={estilos.container}>
       <Cabecalho logout={deslogar} />
+
       <Text style={estilos.texto}>Usuário: {usuario.email}</Text>
 
-      <ScrollView
+      <ScrollSafeAreaView
         style={{ width: '100%' }}
         refreshControl={
           <RefreshControl
@@ -44,17 +52,20 @@ export default function Principal({ navigation }) {
           />
         }
       >
-      {
-        produtos?.map((produto) => {
-          return (
+
+      {produtos?.map((produto) => {
+        return (
           <TouchableOpacity key={produto.id} onPress={() => navigation.navigate('DadosProduto', produto)}>
-          <Produto nome={produto.nome} preco={produto.preco}  />
+            <Produto nome={produto.nome} preco={produto.preco}  />
           </TouchableOpacity>
-          )
-        })
-      }
-      </ScrollView>
+        )
+      })}
+
+      </ScrollSafeAreaView>
+
       <BotaoProduto onPress={() => navigation.navigate("DadosProduto")} />
-     </View>
+     </SafeAreaView>
   );
-}
+};
+
+export default Principal;

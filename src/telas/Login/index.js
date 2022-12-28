@@ -1,61 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import { View, Image } from 'react-native';
-import Botao from '../../componentes/Botao';
-import { EntradaTexto } from '../../componentes/EntradaTexto';
-import { logar } from '../../servicos/auth';
+import React from 'react';
+import { SafeAreaView, Image } from 'react-native';
+
 import estilos from './estilos';
-import { Alerta } from '../../componentes/Alerta';
+import { entradas } from './entradas';
+
+import { logar } from '../../servicos/auth';
 import { auth } from '../../config/firebase';
 import { alteraDados, verificaSeTemEntradaVazia } from '../../utils/comum';
-import { entradas } from './entradas';
+
+import Botao from '../../componentes/Botao';
+import EntradaTexto from '../../componentes/EntradaTexto';
+import Alerta from '../../componentes/Alerta';
 
 import animacaoCarregando from '../../../assets/animacaoCarregando.gif';
 
-export default function Login({ navigation }) {
-  const [dados, setDados] = useState({
+const Login = ({ navigation }) => {
+  const [dados, setDados] = React.useState({
     email: '',
     senha: ''
-  })
+  });
 
-  const [statusError, setStatusError] = useState('');
-  const [mensagemError, setMensagemError] = useState('');
-  const [carregando, setCarregando] = useState(true);
+  const [statusError, setStatusError] = React.useState('');
+  const [mensagemError, setMensagemError] = React.useState('');
+  const [carregando, setCarregando] = React.useState(true);
 
-  useEffect(() => {
-    const estadoUsuario = auth.onAuthStateChanged( usuario => {
-      if(usuario){
-        navigation.replace('Principal')
-      }
-      setCarregando(false)
-    })
-    return () => estadoUsuario();
-  },[])
-
-  async function realizarLogin(){
+  const realizarLogin = async () => {
     // funcao para verificar se email ou senha sao vazios
-    if(verificaSeTemEntradaVazia(dados, setDados)) return
+    if (verificaSeTemEntradaVazia(dados, setDados)) return;
     
-    const resultado = await logar(dados.email, dados.senha)
-    if(resultado == 'erro'){
-      setStatusError(true)
-      setMensagemError('E-mail ou senha não conferem')
-      return
-    }
-    navigation.replace('Principal')
-  }
+    const resultado = await logar(dados.email, dados.senha);
 
-  if(carregando) {
+    if (resultado == 'erro') {
+      setStatusError(true);
+      setMensagemError('E-mail ou senha não conferem');
+
+      return;
+    }
+
+    navigation.replace('Principal');
+  };
+
+  React.useEffect(() => {
+    const estadoUsuario = auth.onAuthStateChanged( usuario => {
+      if (usuario) navigation.replace('Principal');
+
+      setCarregando(false);
+    });
+
+    return () => estadoUsuario();
+  },[]);
+
+  if (carregando) {
     return (
-      <View style={estilos.containerAnimacao}>
+      <SafeAreaView style={estilos.containerAnimacao}>
         <Image source={animacaoCarregando} 
           style={estilos.imagem}
         />
-      </View>
-    )
+      </SafeAreaView>
+    );
   }
 
   return (
-    <View style={estilos.container}>
+    <SafeAreaView style={estilos.container}>
       {
         entradas.map((entrada) => {
           return (
@@ -81,6 +87,8 @@ export default function Login({ navigation }) {
       >
         CADASTRAR USUÁRIO
       </Botao>
-    </View>
+    </SafeAreaView>
   );
-}
+};
+
+export default Login;

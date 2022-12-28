@@ -1,44 +1,50 @@
-import React, { useState } from 'react';
-import { Alert, View } from 'react-native';
-import Botao from '../../componentes/Botao';
-import { EntradaTexto } from '../../componentes/EntradaTexto';
+import React from 'react';
+import { SafeAreaView } from 'react-native';
+
 import estilos from './estilos';
-import { cadastrar } from '../../servicos/auth';
-import { Alerta } from '../../componentes/Alerta';
-import { alteraDados, verificaSeTemEntradaVazia } from '../../utils/comum';
 import { entradas } from './entradas';
 
-export default function Cadastro({ navigation }) {  
-  const [dados, setDados] = useState({
+import { cadastrar } from '../../servicos/auth';
+import { alteraDados, verificaSeTemEntradaVazia } from '../../utils/comum';
+
+import Botao from '../../componentes/Botao';
+import EntradaTexto from '../../componentes/EntradaTexto';
+import Alerta from '../../componentes/Alerta';
+
+
+
+const Cadastro = () => {
+  const [dados, setDados] = React.useState({
     email: '',
     senha: '',
     confirmaSenha: ''
-  })
+  });
 
-  const [statusError, setStatusError] = useState('');
-  const [mensagemError, setMensagemError] = useState('');
+  const [statusError, setStatusError] = React.useState('');
+  const [mensagemError, setMensagemError] = React.useState('');
 
-  function verificaSeSenhasSaoIguais(){
-    return dados.senha != dados.confirmaSenha
-  }
+  const verificaSeSenhasSaoIguais = () => dados.senha != dados.confirmaSenha;
 
-  async function realizarCadastro(){
-    if(verificaSeTemEntradaVazia(dados, setDados)) return
-    if(dados.senha != dados.confirmaSenha) {
+  const realizarCadastro = async () => {
+    if (verificaSeTemEntradaVazia(dados, setDados)) return;
+
+    if (dados.senha != dados.confirmaSenha) {
       setStatusError(true)
       setMensagemError('As senhas não conferem')
-      return
+
+      return;
     }
 
     const resultado = await cadastrar(dados.email, dados.senha);
-    if(resultado != 'sucesso'){
-      setStatusError(true)
-      setMensagemError(resultado)
+  
+    if (resultado != 'sucesso') {
+      setStatusError(true);
+      setMensagemError(resultado);
     }
   }
 
   return (
-    <View style={estilos.container}>
+    <SafeAreaView style={estilos.container}>
       {
         entradas.map((entrada) => {
           return (
@@ -62,6 +68,8 @@ export default function Cadastro({ navigation }) {
       />
       
       <Botao onPress={() => realizarCadastro()}>CADASTRAR</Botao>
-    </View>
+    </SafeAreaView>
   );
-}
+};
+
+export default Cadastro;
