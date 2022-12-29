@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, Text, RefreshControl, ScrollSafeAreaView, TouchableOpacity } from 'react-native';
+import { SafeAreaView, Text, RefreshControl, TouchableOpacity, ScrollView } from 'react-native';
 
 import estilos from './estilos';
 
@@ -43,7 +43,7 @@ const Principal = ({ navigation }) => {
 
       <Text style={estilos.texto}>Usuário: {usuario.email}</Text>
 
-      <ScrollSafeAreaView
+      <ScrollView
         style={{ width: '100%' }}
         refreshControl={
           <RefreshControl
@@ -61,10 +61,10 @@ const Principal = ({ navigation }) => {
         )
       })}
 
-      </ScrollSafeAreaView>
+      </ScrollView>
 
       <BotaoProduto onPress={() => navigation.navigate("DadosProduto")} />
-     </SafeAreaView>
+    </SafeAreaView>
   );
 };
 

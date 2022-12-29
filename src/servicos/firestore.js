@@ -68,7 +68,7 @@ export const atualizarProduto = async (produtoID, data) => {
   }
 };
 
-export const deletarProduto = (produtoID) => {
+export const deletarProduto = async (produtoID) => {
   try {
     const produtoRef = doc(db, 'produtos', produtoID);
 

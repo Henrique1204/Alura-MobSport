@@ -27,7 +27,7 @@ export const cadastrar = async (email, senha) => {
   return resultado
 };
 
-export const logar = (email, senha) => {
+export const logar = async (email, senha) => {
   const resultado = await signInWithEmailAndPassword(auth, email, senha)
   .then(() => 'sucesso')
   .catch(() => 'erro');
